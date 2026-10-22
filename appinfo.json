@@ -1,0 +1,10 @@
+{
+  "id": "com.cantabria.marcodigital",
+  "version": "1.0.0",
+  "vendor": "Udias",
+  "type": "web",
+  "main": "index.html",
+  "title": "Marco Digital Cantabria",
+  "icon": "icon.png",
+  "inactivity": "none"
+}

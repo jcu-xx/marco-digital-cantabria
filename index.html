@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marco Digital Cantabria</title>
+    <link rel="icon" type="image/jpeg" href="ogo.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
+    <style>
+        body, html { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; background-color: #000; font-family: 'Montserrat', sans-serif; }
+        iframe { width: 100vw; height: 100vh; border: none; position: fixed; top: 0; left: 0; z-index: 1; }
+        
+        #splash-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #000; z-index: 20000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 1s ease-in-out; opacity: 1; cursor: pointer;
+        }
+        #splash-screen.oculto { opacity: 0; pointer-events: none; }
+        
+        .splash-logo { 
+            width: 160px; 
+            height: 160px; 
+            object-fit: cover; 
+            border-radius: 50%; 
+            margin-bottom: 20px; 
+            border: 3px solid #dd6b20; 
+            box-shadow: 0 0 25px rgba(221, 107, 32, 0.6); 
+            background-color: #111; 
+        }
+
+        .splash-title { font-family: 'UnifrakturMaguntia', serif; color: #dd6b20; font-size: 3.5rem; margin: 0; text-align: center; text-shadow: 2px 2px 6px rgba(0,0,0,0.9); font-weight: normal; }
+        .splash-subtitle { color: #ffffff; font-size: 1.2rem; font-weight: 300; margin-top: 10px; letter-spacing: 3px; text-transform: uppercase; }
+        .splash-credits { position: absolute; bottom: 25px; color: #888; font-size: 0.85rem; letter-spacing: 1px; }
+
+        #brand-logo {
+            position: fixed; bottom: 15px; left: 15px; z-index: 9999;
+            width: 50px; height: 50px; border-radius: 50%;
+            border: 2px solid #dd6b20; object-fit: cover;
+            background-color: #111; box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+        }
+
+        #reproductor-widget {
+            position: fixed; bottom: 15px; right: 15px; z-index: 9999;
+            display: flex; align-items: center; flex-direction: row-reverse; gap: 8px;
+        }
+        #btn-toggle-player {
+            background: rgba(221, 107, 32, 0.9); backdrop-filter: blur(6px); color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3); width: 48px; height: 48px; border-radius: 50%;
+            cursor: pointer; font-size: 22px; display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6); transition: transform 0.2s, background 0.3s;
+        }
+        #btn-toggle-player:hover { transform: scale(1.08); background: rgba(221, 107, 32, 1); }
+        
+        #reproductor-panel {
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
+            padding: 10px 16px; border-radius: 25px; color: #fff; font-size: 12px;
+            display: flex; align-items: center; gap: 10px; border: 1px solid rgba(221, 107, 32, 0.4);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); max-width: 0; opacity: 0; overflow: hidden; transition: all 0.4s ease-in-out; white-space: nowrap;
+        }
+        #reproductor-widget.abierto #reproductor-panel { max-width: 400px; opacity: 1; }
+        audio { height: 28px; filter: invert(1) hue-rotate(180deg); }
+        #info-cancion { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+    </style>
+</head>
+<body>
+
+    <div id="splash-screen" onclick="ocultarSplash()">
+        <img src="ogo.jpg" class="splash-logo" alt="Logo" onerror="tratarFallbackImagen(this)">
+        <h1 class="splash-title">Marco Digital Cantabria</h1>
+        <div class="splash-subtitle">Mirar es volver &bull; V 3.6</div>
+        
+        <div class="splash-credits">Dise&ntilde;ado con Gemini AI por J. C. Ud&iacute;as</div>
+    </div>
+
+    <!-- Cambia la IP si es necesario por la de tu servidor de Immich -->
+    <iframe src="http://192.168.1.30:3000" allowfullscreen></iframe>
+    
+    <img src="ogo.jpg" id="brand-logo" alt="Logo" onerror="tratarFallbackImagen(this)">
+
+    <div id="reproductor-widget">
+        <button id="btn-toggle-player" title="M&uacute;sica">&#9835;</button>
+        <div id="reproductor-panel">
+            <span id="info-cancion">Cargando...</span>
+            <audio id="audio-player" controls></audio>
+        </div>
+    </div>
+
+    <script>
+        function tratarFallbackImagen(img) {
+            if (img.src.endsWith('ogo.jpg')) {
+                img.src = 'ogo.png';
+            } else if (img.src.endsWith('ogo.png')) {
+                img.src = 'ogo.jpeg';
+            }
+        }
+
+        var audioPlayer = document.getElementById("audio-player");
+        var reproduciendoIniciado = false;
+
+        function ocultarSplash() {
+            var splash = document.getElementById('splash-screen');
+            if (splash && !splash.classList.contains('oculto')) {
+                splash.classList.add('oculto');
+                setTimeout(function() {
+                    splash.style.display = 'none';
+                }, 1000);
+            }
+            if (audioPlayer && !reproduciendoIniciado) {
+                audioPlayer.play().then(() => {
+                    reproduciendoIniciado = true;
+                }).catch(e => console.log("Esperando interacción para audio"));
+            }
+        }
+
+        setTimeout(ocultarSplash, 3000);
+
+        document.addEventListener('click', function() {
+            if (audioPlayer && !reproduciendoIniciado) {
+                audioPlayer.play().then(() => {
+                    reproduciendoIniciado = true;
+                }).catch(e => {});
+            }
+        }, { once: true });
+
+        try {
+            var widget = document.getElementById("reproductor-widget");
+            var btnToggle = document.getElementById("btn-toggle-player");
+            if (btnToggle) {
+                btnToggle.addEventListener("click", function() {
+                    widget.classList.toggle("abierto");
+                });
+            }
+
+            var infoCancion = document.getElementById("info-cancion");
+            var playlist = [];
+            var currentIndex = 0;
+
+            function shuffle(array) {
+                for (var i = array.length - 1; i > 0; i--) {
+                    var j = Math.floor(Math.random() * (i + 1));
+                    var temp = array[i];
+                    array[i] = array[j];
+                    array[j] = temp;
+                }
+                return array;
+            }
+
+            async function cargarPlaylist() {
+                try {
+                    var res = await fetch("pistas/");
+                    if (!res.ok) {
+                        if (infoCancion) infoCancion.textContent = "Error HTTP " + res.status;
+                        return;
+                    }
+                    var data = await res.json();
+                    var encontradas = data
+                        .map(function(item) { return item.name; })
+                        .filter(function(name) { return name.toLowerCase().endsWith(".mp3"); });
+
+                    if (encontradas.length > 0) {
+                        playlist = shuffle(encontradas);
+                        if (infoCancion) infoCancion.textContent = playlist.length + " pistas";
+                        cargarCancion(0);
+                    } else {
+                        if (infoCancion) infoCancion.textContent = "Sin MP3 en pistas";
+                    }
+                } catch (e) {
+                    console.error(e);
+                    if (infoCancion) infoCancion.textContent = "Error leyendo lista";
+                }
+            }
+
+            function cargarCancion(index) {
+                if (!playlist.length) return;
+                var nombreArchivo = playlist[index];
+                if (infoCancion) infoCancion.textContent = nombreArchivo;
+                if (audioPlayer) {
+                    audioPlayer.src = "pistas/" + encodeURIComponent(nombreArchivo);
+                    audioPlayer.load();
+                    audioPlayer.play().then(() => {
+                        reproduciendoIniciado = true;
+                    }).catch(function(e) {
+                        console.log("Autoplay en espera de interacción del navegador");
+                    });
+                }
+            }
+
+            if (audioPlayer) {
+                audioPlayer.addEventListener("ended", function() {
+                    currentIndex = currentIndex + 1;
+                    if (currentIndex >= playlist.length) {
+                        currentIndex = 0;
+                    }
+                    cargarCancion(currentIndex);
+                });
+            }
+
+            cargarPlaylist();
+        } catch(e) {
+            console.error("Error en módulo de audio:", e);
+        }
+    </script>
+
+
+</body>
+</html>

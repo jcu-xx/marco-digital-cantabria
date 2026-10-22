@@ -1,0 +1,25 @@
+name: Empaquetar webOS IPK
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar codigo del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Empaquetar con la herramienta oficial de LG
+        run: npx @webosose/ares-cli ares-package .
+
+      - name: Subir el archivo IPK resultante
+        uses: actions/upload-artifact@v4
+        with:
+          name: marco-digital-ipk
+          path: '*.ipk'
+          

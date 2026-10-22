@@ -15,7 +15,9 @@ jobs:
           node-version: '18'
 
       - name: Empaquetar con la herramienta oficial de LG
-        run: npx @webosose/ares-cli ares-package .
+        run: |
+          npm install -g @webos-tools/cli
+          ares-package .
 
       - name: Subir el archivo IPK resultante
         uses: actions/upload-artifact@v4

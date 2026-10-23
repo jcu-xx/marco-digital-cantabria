@@ -6,5 +6,7 @@
   "main": "index.html",
   "title": "Marco Digital Cantabria",
   "icon": "icon.png",
-  "requiredACG": []
+  "requiredACG": [],
+  "uiRevision": "2",
+  "resolution": "1920x1080"
 }

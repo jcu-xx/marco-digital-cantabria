@@ -1,207 +1,616 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marco Digital Cantabria</title>
-    <link rel="icon" type="image/jpeg" href="ogo.jpg">
-    <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
-    <style>
-        body, html { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; background-color: #000; font-family: 'Montserrat', sans-serif; }
-        iframe { width: 100vw; height: 100vh; border: none; position: fixed; top: 0; left: 0; z-index: 1; }
-        
-        #splash-screen {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #000; z-index: 20000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: opacity 1s ease-in-out; opacity: 1; cursor: pointer;
-        }
-        #splash-screen.oculto { opacity: 0; pointer-events: none; }
-        
-        .splash-logo { 
-            width: 160px; 
-            height: 160px; 
-            object-fit: cover; 
-            border-radius: 50%; 
-            margin-bottom: 20px; 
-            border: 3px solid #dd6b20; 
-            box-shadow: 0 0 25px rgba(221, 107, 32, 0.6); 
-            background-color: #111; 
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marco Digital Cantabria</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
 
-        .splash-title { font-family: 'UnifrakturMaguntia', serif; color: #dd6b20; font-size: 3.5rem; margin: 0; text-align: center; text-shadow: 2px 2px 6px rgba(0,0,0,0.9); font-weight: normal; }
-        .splash-subtitle { color: #ffffff; font-size: 1.2rem; font-weight: 300; margin-top: 10px; letter-spacing: 3px; text-transform: uppercase; }
-        .splash-credits { position: absolute; bottom: 25px; color: #888; font-size: 0.85rem; letter-spacing: 1px; }
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #000;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      color: #fff;
+    }
 
-        #brand-logo {
-            position: fixed; bottom: 15px; left: 15px; z-index: 9999;
-            width: 50px; height: 50px; border-radius: 50%;
-            border: 2px solid #dd6b20; object-fit: cover;
-            background-color: #111; box-shadow: 0 4px 15px rgba(0,0,0,0.8);
-        }
+    /* --- CARÁTULA DE ENTRADA (SPLASH SCREEN) --- */
+    #splash-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #050507;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 50;
+      transition: opacity 1.5s ease, visibility 1.5s ease;
+      text-align: center;
+      padding: 20px;
+    }
 
-        #reproductor-widget {
-            position: fixed; bottom: 15px; right: 15px; z-index: 9999;
-            display: flex; align-items: center; flex-direction: row-reverse; gap: 8px;
-        }
-        #btn-toggle-player {
-            background: rgba(221, 107, 32, 0.9); backdrop-filter: blur(6px); color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3); width: 48px; height: 48px; border-radius: 50%;
-            cursor: pointer; font-size: 22px; display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.6); transition: transform 0.2s, background 0.3s;
-        }
-        #btn-toggle-player:hover { transform: scale(1.08); background: rgba(221, 107, 32, 1); }
-        
-        #reproductor-panel {
-            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
-            padding: 10px 16px; border-radius: 25px; color: #fff; font-size: 12px;
-            display: flex; align-items: center; gap: 10px; border: 1px solid rgba(221, 107, 32, 0.4);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5); max-width: 0; opacity: 0; overflow: hidden; transition: all 0.4s ease-in-out; white-space: nowrap;
-        }
-        #reproductor-widget.abierto #reproductor-panel { max-width: 400px; opacity: 1; }
-        audio { height: 28px; filter: invert(1) hue-rotate(180deg); }
-        #info-cancion { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
-    </style>
+    #splash-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .splash-eye {
+      width: 110px;
+      height: 110px;
+      margin-bottom: 25px;
+      cursor: pointer;
+      transition: transform 0.3s ease, filter 0.3s ease;
+    }
+
+    .splash-eye:hover {
+      transform: scale(1.1);
+      filter: drop-shadow(0 0 15px rgba(74, 144, 226, 0.6));
+    }
+
+    .splash-eye svg {
+      width: 100%;
+      height: 100%;
+      fill: #ffffff;
+    }
+
+    .splash-title {
+      font-size: 3.2rem;
+      font-weight: 300;
+      letter-spacing: 4px;
+      color: #ffffff;
+      margin-bottom: 10px;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.8);
+    }
+
+    .splash-subtitle {
+      font-size: 1.3rem;
+      font-weight: 300;
+      color: #4a90e2;
+      letter-spacing: 2px;
+      margin-bottom: 40px;
+    }
+
+    .splash-credits {
+      position: absolute;
+      bottom: 30px;
+      font-size: 0.95rem;
+      color: #777;
+      letter-spacing: 1px;
+    }
+
+    /* Bocadillo / Morcilla estilo Cómic de Aviso en la Carátula */
+    #comic-bubble {
+      position: absolute;
+      top: 22%;
+      background: #ffffff;
+      color: #111;
+      padding: 14px 22px;
+      border-radius: 18px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      z-index: 55;
+      max-width: 340px;
+      animation: bounce 2s infinite;
+      display: none;
+    }
+
+    #comic-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 12px 12px 0;
+      border-style: solid;
+      border-color: #ffffff transparent;
+      display: block;
+      width: 0;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* --- CARRUSEL DE FOTOS --- */
+    #carousel-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #000;
+    }
+
+    .bg-blur {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      filter: blur(25px) brightness(0.5);
+      transform: scale(1.1);
+      transition: background-image 1.2s ease-in-out;
+      z-index: 1;
+    }
+
+    .fg-image {
+      position: absolute;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 1.2s ease-in-out;
+      box-shadow: 0 0 50px rgba(0,0,0,0.8);
+    }
+
+    .fg-image.active {
+      opacity: 1;
+    }
+
+    .touch-zone {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      z-index: 3;
+    }
+    #zone-prev { left: 0; width: 30%; }
+    #zone-pause { left: 30%; width: 40%; }
+    #zone-next { left: 70%; width: 30%; }
+
+    /* Reloj */
+    #clock-widget {
+      position: absolute;
+      top: 25px;
+      right: 35px;
+      z-index: 10;
+      font-size: 1.8rem;
+      font-weight: 300;
+      letter-spacing: 2px;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 6px 18px;
+      border-radius: 20px;
+      backdrop-filter: blur(5px);
+      transition: opacity 0.5s ease;
+    }
+
+    /* Ubicación discreta */
+    #location-tag {
+      position: absolute;
+      bottom: 35px;
+      right: 35px;
+      z-index: 10;
+      font-size: 1.2rem;
+      font-weight: 300;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 8px 18px;
+      border-radius: 12px;
+      backdrop-filter: blur(5px);
+      opacity: 0;
+      transition: opacity 1s ease;
+      letter-spacing: 1px;
+    }
+
+    #location-tag.visible {
+      opacity: 1;
+    }
+
+    /* Icono del Ojo en Esquina (Carrusel) */
+    #eye-icon-small {
+      position: absolute;
+      bottom: 25px;
+      left: 25px;
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 20;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.3s, opacity 0.5s;
+    }
+
+    #eye-icon-small:hover {
+      transform: scale(1.1);
+      background: rgba(0,0,0,0.8);
+    }
+
+    #eye-icon-small svg {
+      width: 30px;
+      height: 30px;
+      fill: #fff;
+    }
+
+    /* Modal de Configuración */
+    #config-modal {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(15px);
+      z-index: 60;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    #config-modal.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #1e1e24;
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 35px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 550px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+    }
+
+    .modal-card h2 {
+      margin-bottom: 20px;
+      font-size: 1.6rem;
+      color: #4a90e2;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+      color: #ccc;
+    }
+
+    .form-group input[type="text"] {
+      width: 100%;
+      padding: 12px 15px;
+      background: #2a2a32;
+      border: 1px solid #444;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .form-group input[type="text"]:focus {
+      border-color: #4a90e2;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+
+    .btn-save {
+      width: 100%;
+      padding: 14px;
+      background: #4a90e2;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-save:hover {
+      background: #357abd;
+    }
+
+    /* Reproductor de Música */
+    #music-player {
+      position: absolute;
+      bottom: 25px;
+      left: 95px;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 30px;
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      z-index: 20;
+      transform: translateX(-20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.4s ease;
+    }
+
+    #music-player.active {
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .player-btn {
+      background: none;
+      border: none;
+      fill: #fff;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+    }
+
+    .idle-hide {
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+  </style>
 </head>
 <body>
 
-    <div id="splash-screen" onclick="ocultarSplash()">
-        <img src="ogo.jpg" class="splash-logo" alt="Logo" onerror="tratarFallbackImagen(this)">
-        <h1 class="splash-title">Marco Digital Cantabria</h1>
-        <div class="splash-subtitle">Mirar es volver &bull; V 3.6</div>
-        
-        <div class="splash-credits">Dise&ntilde;ado con Gemini AI por J. C. Ud&iacute;as</div>
+  <!-- CARÁTULA DE ENTRADA (SPLASH SCREEN) -->
+  <div id="splash-screen">
+    <div id="comic-bubble">
+      ¡Hola! Indica las rutas de fotos y música haciendo clic en el ojo. 👁️
     </div>
 
-    <!-- Cambia la IP si es necesario por la de tu servidor de Immich -->
-    <iframe src="http://192.168.1.30:3000" allowfullscreen></iframe>
+    <div class="splash-eye" id="splash-eye-btn" title="Configurar Rutas">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+      </svg>
+    </div>
+
+    <h1 class="splash-title">Marco Digital Cantabria</h1>
+    <p class="splash-subtitle">Senda, Paisaje y Memoria</p>
+    <p class="splash-credits">Dise&ntilde;ado con Gemini AI por J. C. Ud&iacute;as — V 4.00</p>
+  </div>
+
+  <!-- CARRUSEL -->
+  <div id="carousel-container">
+    <div id="bg-blur" class="bg-blur"></div>
+    <img id="fg-image" class="fg-image" src="" alt="Marco Digital">
     
-    <img src="ogo.jpg" id="brand-logo" alt="Logo" onerror="tratarFallbackImagen(this)">
+    <div id="zone-prev" class="touch-zone"></div>
+    <div id="zone-pause" class="touch-zone"></div>
+    <div id="zone-next" class="touch-zone"></div>
+  </div>
 
-    <div id="reproductor-widget">
-        <button id="btn-toggle-player" title="M&uacute;sica">&#9835;</button>
-        <div id="reproductor-panel">
-            <span id="info-cancion">Cargando...</span>
-            <audio id="audio-player" controls></audio>
-        </div>
+  <!-- Reloj -->
+  <div id="clock-widget">00:00</div>
+
+  <!-- Ubicación Discreta -->
+  <div id="location-tag">📍 Cantabria</div>
+
+  <!-- Icono Ojo Pequeño (Durante el Carrusel) -->
+  <div id="eye-icon-small" title="Configurar Rutas">
+    <svg viewBox="0 0 24 24">
+      <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+    </svg>
+  </div>
+
+  <!-- Reproductor de Música -->
+  <div id="music-player">
+    <button id="btn-play" class="player-btn">
+      <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+    <span id="music-title" style="font-size: 0.9rem; color: #ddd;">Música de fondo</span>
+    <audio id="audio-element"></audio>
+  </div>
+
+  <!-- Modal de Configuración -->
+  <div id="config-modal">
+    <div class="modal-card">
+      <h2>Ajustes del Marco Digital</h2>
+      
+      <div class="form-group">
+        <label for="photos-path">Ruta / URL de Carpeta de Fotos (Obligatoria):</label>
+        <input type="text" id="photos-path" placeholder="Ej: http://192.168.1.50/fotos/">
+      </div>
+
+      <div class="form-group">
+        <label for="music-path">Ruta / URL de Música (Opcional):</label>
+        <input type="text" id="music-path" placeholder="Ej: http://192.168.1.50/musica/">
+      </div>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="show-clock" checked>
+        <label for="show-clock">Mostrar reloj en la esquina</label>
+      </div>
+
+      <button id="btn-save-config" class="btn-save">Guardar y Arrancar</button>
     </div>
+  </div>
 
-    <script>
-        function tratarFallbackImagen(img) {
-            if (img.src.endsWith('ogo.jpg')) {
-                img.src = 'ogo.png';
-            } else if (img.src.endsWith('ogo.png')) {
-                img.src = 'ogo.jpeg';
-            }
+  <script>
+    let config = {
+      photosPath: localStorage.getItem('md_photosPath') || '',
+      musicPath: localStorage.getItem('md_musicPath') || '',
+      showClock: localStorage.getItem('md_showClock') !== 'false'
+    };
+
+    let photoList = [];
+    let currentPhotoIdx = 0;
+    let carouselTimer = null;
+    let isPaused = false;
+    let idleTimer = null;
+
+    const splashScreen = document.getElementById('splash-screen');
+    const splashEyeBtn = document.getElementById('splash-eye-btn');
+    const comicBubble = document.getElementById('comic-bubble');
+    const bgBlur = document.getElementById('bg-blur');
+    const fgImage = document.getElementById('fg-image');
+    const clockWidget = document.getElementById('clock-widget');
+    const locationTag = document.getElementById('location-tag');
+    const eyeIconSmall = document.getElementById('eye-icon-small');
+    const configModal = document.getElementById('config-modal');
+    const musicPlayer = document.getElementById('music-player');
+    const audioElement = document.getElementById('audio-element');
+
+    function init() {
+      setupClock();
+      setupEventListeners();
+
+      if (!config.photosPath) {
+        comicBubble.style.display = 'block';
+      } else {
+        comicBubble.style.display = 'none';
+        // Espera los 4 segundos reglamentarios de la carátula antes de iniciar el pase
+        setTimeout(transitionToCarousel, 4000);
+      }
+    }
+
+    function setupClock() {
+      function update() {
+        const now = new Date();
+        clockWidget.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
+      update();
+      setInterval(update, 1000);
+      clockWidget.style.display = config.showClock ? 'block' : 'none';
+    }
+
+    function openConfigModal() {
+      document.getElementById('photos-path').value = config.photosPath;
+      document.getElementById('music-path').value = config.musicPath;
+      document.getElementById('show-clock').checked = config.showClock;
+      configModal.classList.add('open');
+    }
+
+    function transitionToCarousel() {
+      if (!config.photosPath) return;
+
+      splashScreen.classList.add('hidden');
+      startCarousel();
+    }
+
+    function startCarousel() {
+      photoList = [
+        { url: config.photosPath + 'foto1.jpg', location: 'Liérganes' },
+        { url: config.photosPath + 'foto2.jpg', location: 'Sobremazas' },
+        { url: config.photosPath + 'foto3.jpg', location: 'Valderredible' }
+      ];
+
+      currentPhotoIdx = 0;
+      showNextPhoto();
+
+      if (carouselTimer) clearInterval(carouselTimer);
+      carouselTimer = setInterval(showNextPhoto, 7000);
+
+      if (config.musicPath) {
+        musicPlayer.classList.add('active');
+        audioElement.src = config.musicPath + 'pista1.mp3';
+      } else {
+        musicPlayer.classList.remove('active');
+      }
+    }
+
+    function showNextPhoto() {
+      if (isPaused || photoList.length === 0) return;
+
+      const item = photoList[currentPhotoIdx];
+      
+      fgImage.classList.remove('active');
+
+      setTimeout(() => {
+        bgBlur.style.backgroundImage = `url('${item.url}')`;
+        fgImage.src = item.url;
+        fgImage.classList.add('active');
+
+        if (item.location) {
+          locationTag.textContent = `📍 ${item.location}`;
+          locationTag.classList.add('visible');
+          setTimeout(() => locationTag.classList.remove('visible'), 3500);
         }
+      }, 600);
 
-        var audioPlayer = document.getElementById("audio-player");
-        var reproduciendoIniciado = false;
+      currentPhotoIdx = (currentPhotoIdx + 1) % photoList.length;
+    }
 
-        function ocultarSplash() {
-            var splash = document.getElementById('splash-screen');
-            if (splash && !splash.classList.contains('oculto')) {
-                splash.classList.add('oculto');
-                setTimeout(function() {
-                    splash.style.display = 'none';
-                }, 1000);
-            }
-            if (audioPlayer && !reproduciendoIniciado) {
-                audioPlayer.play().then(() => {
-                    reproduciendoIniciado = true;
-                }).catch(e => console.log("Esperando interacci�n para audio"));
-            }
+    function setupEventListeners() {
+      splashEyeBtn.addEventListener('click', openConfigModal);
+      eyeIconSmall.addEventListener('click', openConfigModal);
+
+      document.getElementById('btn-save-config').addEventListener('click', () => {
+        config.photosPath = document.getElementById('photos-path').value.trim();
+        config.musicPath = document.getElementById('music-path').value.trim();
+        config.showClock = document.getElementById('show-clock').checked;
+
+        localStorage.setItem('md_photosPath', config.photosPath);
+        localStorage.setItem('md_musicPath', config.musicPath);
+        localStorage.setItem('md_showClock', config.showClock);
+
+        clockWidget.style.display = config.showClock ? 'block' : 'none';
+        configModal.classList.remove('open');
+
+        if (config.photosPath) {
+          comicBubble.style.display = 'none';
+          transitionToCarousel();
+        } else {
+          comicBubble.style.display = 'block';
         }
+      });
 
-        setTimeout(ocultarSplash, 3000);
+      document.getElementById('zone-prev').addEventListener('click', () => {
+        currentPhotoIdx = (currentPhotoIdx - 2 + photoList.length) % photoList.length;
+        showNextPhoto();
+      });
 
-        document.addEventListener('click', function() {
-            if (audioPlayer && !reproduciendoIniciado) {
-                audioPlayer.play().then(() => {
-                    reproduciendoIniciado = true;
-                }).catch(e => {});
-            }
-        }, { once: true });
+      document.getElementById('zone-pause').addEventListener('click', () => {
+        isPaused = !isPaused;
+      });
 
-        try {
-            var widget = document.getElementById("reproductor-widget");
-            var btnToggle = document.getElementById("btn-toggle-player");
-            if (btnToggle) {
-                btnToggle.addEventListener("click", function() {
-                    widget.classList.toggle("abierto");
-                });
-            }
+      document.getElementById('zone-next').addEventListener('click', () => {
+        showNextPhoto();
+      });
 
-            var infoCancion = document.getElementById("info-cancion");
-            var playlist = [];
-            var currentIndex = 0;
+      window.addEventListener('mousemove', resetIdleTimer);
+      window.addEventListener('click', resetIdleTimer);
+    }
 
-            function shuffle(array) {
-                for (var i = array.length - 1; i > 0; i--) {
-                    var j = Math.floor(Math.random() * (i + 1));
-                    var temp = array[i];
-                    array[i] = array[j];
-                    array[j] = temp;
-                }
-                return array;
-            }
+    function resetIdleTimer() {
+      eyeIconSmall.classList.remove('idle-hide');
+      clockWidget.classList.remove('idle-hide');
+      musicPlayer.classList.remove('idle-hide');
 
-            async function cargarPlaylist() {
-                try {
-                    var res = await fetch("pistas/");
-                    if (!res.ok) {
-                        if (infoCancion) infoCancion.textContent = "Error HTTP " + res.status;
-                        return;
-                    }
-                    var data = await res.json();
-                    var encontradas = data
-                        .map(function(item) { return item.name; })
-                        .filter(function(name) { return name.toLowerCase().endsWith(".mp3"); });
-
-                    if (encontradas.length > 0) {
-                        playlist = shuffle(encontradas);
-                        if (infoCancion) infoCancion.textContent = playlist.length + " pistas";
-                        cargarCancion(0);
-                    } else {
-                        if (infoCancion) infoCancion.textContent = "Sin MP3 en pistas";
-                    }
-                } catch (e) {
-                    console.error(e);
-                    if (infoCancion) infoCancion.textContent = "Error leyendo lista";
-                }
-            }
-
-            function cargarCancion(index) {
-                if (!playlist.length) return;
-                var nombreArchivo = playlist[index];
-                if (infoCancion) infoCancion.textContent = nombreArchivo;
-                if (audioPlayer) {
-                    audioPlayer.src = "pistas/" + encodeURIComponent(nombreArchivo);
-                    audioPlayer.load();
-                    audioPlayer.play().then(() => {
-                        reproduciendoIniciado = true;
-                    }).catch(function(e) {
-                        console.log("Autoplay en espera de interacci�n del navegador");
-                    });
-                }
-            }
-
-            if (audioPlayer) {
-                audioPlayer.addEventListener("ended", function() {
-                    currentIndex = currentIndex + 1;
-                    if (currentIndex >= playlist.length) {
-                        currentIndex = 0;
-                    }
-                    cargarCancion(currentIndex);
-                });
-            }
-
-            cargarPlaylist();
-        } catch(e) {
-            console.error("Error en m�dulo de audio:", e);
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        if (!configModal.classList.contains('open') && splashScreen.classList.contains('hidden')) {
+          eyeIconSmall.classList.add('idle-hide');
+          clockWidget.classList.add('idle-hide');
+          musicPlayer.classList.add('idle-hide');
         }
-    </script>
+      }, 5000);
+    }
 
-
+    window.onload = init;
+  </script>
 </body>
 </html>

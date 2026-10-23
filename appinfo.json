@@ -5,6 +5,5 @@
   "type": "web",
   "main": "index.html",
   "title": "Marco Digital Cantabria",
-  "icon": "icon.png",
-  "inactivity": "none"
+  "icon": "icon.png"
 }

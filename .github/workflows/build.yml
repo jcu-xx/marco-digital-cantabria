@@ -12,12 +12,12 @@ jobs:
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
 
       - name: Empaquetar con la herramienta oficial de LG
         run: |
           npm install -g @webos-tools/cli
-          rm -rf pistas/.gitkeep
+          rm -rf pistas
           ares-package .
 
       - name: Subir el archivo IPK resultante
@@ -25,4 +25,3 @@ jobs:
         with:
           name: marco-digital-ipk
           path: '*.ipk'
-          
